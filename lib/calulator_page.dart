@@ -10,6 +10,107 @@ class CalulatorPage extends StatefulWidget {
 }
 
 class _CalulatorPageState extends State<CalulatorPage> {
+  num numberOne = 0;
+  num numberTwo = 0;
+  num result = 0;
+  String finalResult = '';
+  String operator = '';
+  String preOperator = '';
+  String displayText = '0';
+
+  void _onPressButton(String textButton) {
+    if (textButton == 'AC') {
+      numberOne = 0;
+      numberTwo = 0;
+      result = 0;
+      operator = '';
+      preOperator = '';
+      finalResult = '0';
+    } else if (operator == '=' && textButton == '=') {
+      if (preOperator == '+') {
+        finalResult = _plus().toString();
+      } else if (preOperator == '-') {
+        finalResult = _minus().toString();
+      } else if (preOperator == 'X') {
+        finalResult = _multiply().toString();
+      } else if (preOperator == '/') {
+        finalResult = _divide().toString();
+      }
+    } else if (textButton == '+' ||
+        textButton == '-' ||
+        textButton == 'X' ||
+        textButton == '/' ||
+        textButton == '=') {
+      if (numberOne == 0) {
+        numberOne = result;
+      } else {
+        numberTwo = result;
+      }
+
+      if (operator == '+') {
+        finalResult = _plus().toString();
+      } else if (preOperator == '-') {
+        finalResult = _minus().toString();
+      } else if (preOperator == 'X') {
+        finalResult = _multiply().toString();
+      } else if (preOperator == '/') {
+        finalResult = _divide().toString();
+      }
+
+      preOperator = operator;
+      operator = textButton;
+      result = 0;
+    } else if (textButton == '%') {
+      result = result / 100;
+      finalResult = '$result';
+    } else if (textButton == '.') {
+      if (!result.toString().contains('.')) {
+        result = num.parse(result.toString() + '.');
+      }
+
+      finalResult = '$result';
+    } else if (textButton == '+/-') {
+      if (result.toString().startsWith('-')) {
+        result = num.parse(result.toString().substring(1));
+      } else {
+        result = num.parse('-' + result.toString());
+      }
+
+      finalResult = '$result';
+    } else {
+      result = num.parse('$result' + textButton);
+      finalResult = '$result';
+    }
+
+    setState(() {
+      displayText = finalResult;
+    });
+  }
+
+  num _plus() {
+    result = numberOne + numberTwo;
+    numberOne = result;
+    return result;
+  }
+
+  num _minus() {
+    result = numberOne - numberTwo;
+    numberOne = result;
+    return result;
+  }
+
+  num _multiply() {
+    result = numberOne * numberTwo;
+    numberOne = result;
+    return result;
+  }
+
+  num _divide() {
+    result = numberOne / numberTwo;
+    numberOne = result;
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     const firstRow = ['AC', '+/-', '%', '/'];
@@ -54,13 +155,20 @@ class _CalulatorPageState extends State<CalulatorPage> {
     return AspectRatio(
       aspectRatio: 5 / 4,
       child: Neumorphic(
+        padding: const EdgeInsets.all(8),
         style: NeumorphicStyle(
           depth: -2,
           boxShape: NeumorphicBoxShape.roundRect(
             BorderRadius.circular(20),
           ),
         ),
-        child: const Text(''),
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: Text(
+            displayText,
+            style: const TextStyle(fontSize: 54),
+          ),
+        ),
       ),
     );
   }
@@ -82,7 +190,7 @@ class _CalulatorPageState extends State<CalulatorPage> {
       child: AspectRatio(
         aspectRatio: 2,
         child: NeumorphicButton(
-          onPressed: () {},
+          onPressed: () => _onPressButton('0'),
           style: NeumorphicStyle(
             boxShape: NeumorphicBoxShape.roundRect(
               BorderRadius.circular(30),
@@ -108,7 +216,7 @@ class _CalulatorPageState extends State<CalulatorPage> {
       child: AspectRatio(
         aspectRatio: 1,
         child: NeumorphicButton(
-          onPressed: () {},
+          onPressed: () => _onPressButton(text),
           style: const NeumorphicStyle(
             boxShape: NeumorphicBoxShape.circle(),
           ),
